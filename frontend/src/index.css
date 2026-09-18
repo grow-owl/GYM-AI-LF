@@ -1,0 +1,494 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  /* Base surfaces — clean neutral gray/white, per brand palette */
+  --color-base: #E5E5E5;
+  --color-surface: #FFFFFF;
+  --color-surface-2: #F7F7F7;
+  --color-surface-3: #EDEDED;
+  --color-border: #DCDCDC;
+  --color-border-soft: #E9E9E9;
+
+  /* Text — dark navy on light backgrounds (strong, reliable contrast) */
+  --color-text: #14213D;
+  --color-text-muted: #4B5670;
+  --color-text-faint: #7C859A;
+
+  /* Brand accent — warm orange, straight off the brand palette */
+  --color-accent: #FCA311;
+  --color-accent-strong: #FCA311;
+  --color-accent-soft: #FCA3111F;
+  --color-accent-text: #A66500;
+
+  /* Reference light surface — soft warm-tinted panels */
+  --color-light: #FFF3E0;
+  --color-light-2: #FFE6BF;
+
+  /* Functional (kept for status semantics — pass/warn/fail must stay distinct from brand) */
+  --color-good: #16A34A;
+  --color-good-soft: #16A34A20;
+  --color-warn: #D97706;
+  --color-warn-soft: #D9770620;
+  --color-danger: #DC2626;
+  --color-danger-soft: #DC26261A;
+
+  --font-display: "Space Grotesk", "Inter", sans-serif;
+  --font-sans: "Inter", sans-serif;
+  --font-mono: "IBM Plex Mono", monospace;
+
+  /* Navbar — dedicated dark-navy surface for the sidebar / bottom nav */
+  --color-navbar: #14213D;
+  --color-navbar-2: #1B2C4F;
+  --color-navbar-text: #FFFFFF;
+  --color-navbar-text-muted: #A9B4CC;
+  --color-navbar-border: #24345C;
+
+  /* Sidebar — dark navy surface for desktop navigation */
+  --color-sidebar: #14213D;
+  --color-sidebar-text: #FFFFFF;
+  --color-sidebar-text-muted: #A9B4CC;
+  --color-sidebar-border: #24345C;
+
+  --radius-card: 1.25rem;
+
+  /* Category palette — shades of navy + orange + neutral, one per stat/card type */
+  --tone-blue: #2C4374;
+  --tone-blue-soft: #2C43741A;
+  --tone-blue-text: #1E3560;
+
+  --tone-purple: #14213D;
+  --tone-purple-soft: #14213D1A;
+  --tone-purple-text: #14213D;
+
+  --tone-green: #16A34A;
+  --tone-green-soft: #16A34A1A;
+  --tone-green-text: #15803D;
+
+  --tone-pink: #E85D2B;
+  --tone-pink-soft: #E85D2B1A;
+  --tone-pink-text: #C24A1F;
+
+  --tone-amber: #FCA311;
+  --tone-amber-soft: #FCA3111A;
+  --tone-amber-text: #A66500;
+
+  --tone-orange: #FCA311;
+  --tone-orange-soft: #FCA3111A;
+  --tone-orange-text: #A66500;
+
+  --tone-teal: #52607A;
+  --tone-teal-soft: #52607A1A;
+  --tone-teal-text: #3A4560;
+}
+
+html, body, #root {
+  height: 100%;
+}
+
+body {
+  background-color: var(--color-base);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  background-image:
+    radial-gradient(circle at 8% -5%, #FFE6BF 0%, transparent 40%),
+    radial-gradient(circle at 100% 0%, #E9ECF3 0%, transparent 32%),
+    radial-gradient(circle at 50% 100%, #E5E5E5 0%, transparent 38%);
+  background-attachment: fixed;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-surface-3) transparent;
+}
+
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 999px; }
+
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* Text inputs handle focus visually via their parent container — no rectangle outline */
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: none;
+}
+
+
+.font-display { font-family: var(--font-display); }
+.font-mono { font-family: var(--font-mono); }
+
+.mobile-frame {
+  max-width: 430px;
+}
+
+@keyframes scan-line {
+  0% { top: 2rem; opacity: 0.9; }
+  50% { top: calc(100% - 2rem); opacity: 0.9; }
+  51% { opacity: 0; }
+  52% { top: 2rem; opacity: 0; }
+  60% { opacity: 0.9; }
+  100% { top: 2rem; opacity: 0.9; }
+}
+.scan-line-anim {
+  animation: scan-line 2.6s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .scan-line-anim { animation: none; }
+}
+
+/* Signature: angled energy sweep used sparingly on hero-level cards */
+.energy-sweep {
+  position: relative;
+  overflow: hidden;
+}
+.energy-sweep::before {
+  content: "";
+  position: absolute;
+  inset: -40% -10%;
+  background: linear-gradient(115deg, transparent 40%, var(--color-accent-soft) 50%, transparent 62%);
+  pointer-events: none;
+}
+
+/* ---------- Global motion system ---------- */
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes fade-in-up {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes scale-in {
+    from { opacity: 0; transform: scale(0.96); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes slide-in-right {
+    from { opacity: 0; transform: translateX(24px); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+  @keyframes float-soft {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+  }
+  @keyframes pulse-ring {
+    0% { box-shadow: 0 0 0 0 var(--color-accent-soft); }
+    100% { box-shadow: 0 0 0 10px transparent; }
+  }
+
+  .animate-fade-in-up { animation: fade-in-up 0.55s cubic-bezier(0.16, 1, 0.3, 1) both; }
+  .animate-fade-in { animation: fade-in 0.4s ease both; }
+  .animate-scale-in { animation: scale-in 0.35s cubic-bezier(0.16, 1, 0.3, 1) both; }
+  .animate-slide-in-right { animation: slide-in-right 0.45s cubic-bezier(0.16, 1, 0.3, 1) both; }
+  .animate-float { animation: float-soft 4.5s ease-in-out infinite; }
+  .animate-pulse-ring { animation: pulse-ring 1.6s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+
+  /* Stagger helper — apply alongside animate-fade-in-up, set --stagger-i per item */
+  .stagger-item {
+    animation-delay: calc(var(--stagger-i, 0) * 60ms);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-in-up, .animate-fade-in, .animate-scale-in, .animate-slide-in-right, .animate-float, .animate-pulse-ring {
+    animation: none !important;
+  }
+}
+
+/* Smooth, low-cost transitions on interactive surfaces (not a global * rule — keeps perf sane) */
+a, button, input, select, textarea, .transition-surface {
+  transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
+}
+
+/* Navbar animated hover underline */
+.nav-link-underline {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+.nav-link-underline::after {
+  content: "";
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: var(--color-accent);
+  border-radius: 999px;
+  transition: width 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.nav-link-underline:hover::after {
+  width: 100%;
+}
+
+/* Button sheen effect on hover */
+.btn-sheen {
+  position: relative;
+  overflow: hidden;
+}
+.btn-sheen::after {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    60deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.25) 50%,
+    transparent 70%
+  );
+  transform: translateX(-100%) rotate(25deg);
+  transition: transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+}
+.btn-sheen:hover::after {
+  transform: translateX(100%) rotate(25deg);
+}
+
+/* Heavy section deferral for offscreen content rendering performance & CWV */
+.heavy-section-deferred {
+  content-visibility: auto;
+  contain-intrinsic-size: auto none auto 400px;
+}
+
+.btn-press:active {
+  transform: scale(0.97);
+}
+
+/* Mobile responsive horizontal scroll wrapper for data tables */
+.table-responsive-container {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.card-hover {
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.28s ease, box-shadow 0.28s ease;
+}
+.card-hover:hover {
+  transform: translateY(-4px);
+  border-color: color-mix(in srgb, var(--color-accent) 55%, var(--color-border));
+  box-shadow: 0 14px 30px -12px rgba(20, 33, 61, 0.14);
+}
+
+.icon-hover-pop {
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.group:hover .icon-hover-pop,
+*:hover > .icon-hover-pop,
+button:hover .icon-hover-pop,
+a:hover .icon-hover-pop {
+  transform: scale(1.12) rotate(4deg);
+}
+
+.skeleton {
+  background: linear-gradient(90deg, var(--color-surface-2) 25%, var(--color-surface-3) 37%, var(--color-surface-2) 63%);
+  background-size: 400% 100%;
+  animation: shimmer 1.4s ease infinite;
+}
+
+/* Page transition wrapper */
+.page-enter {
+  animation: fade-in-up 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* ---------- Animated background (kept light — soft floating color blobs) ---------- */
+@keyframes drift-a {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(4%, 6%) scale(1.08); }
+  66% { transform: translate(-3%, -4%) scale(0.96); }
+}
+@keyframes drift-b {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(-5%, 3%) scale(1.05); }
+  66% { transform: translate(4%, -5%) scale(0.94); }
+}
+@keyframes drift-c {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-4%, -6%) scale(1.1); }
+}
+
+.bg-blobs {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.bg-blobs span {
+  position: absolute;
+  border-radius: 999px;
+  filter: blur(80px);
+  opacity: 0.28;
+  will-change: transform;
+}
+.bg-blobs .blob-1 {
+  top: -8%; left: -6%; width: 38vw; height: 38vw;
+  background: var(--tone-purple);
+  animation: drift-a 22s ease-in-out infinite;
+}
+.bg-blobs .blob-2 {
+  top: 10%; right: -10%; width: 32vw; height: 32vw;
+  background: var(--tone-pink);
+  animation: drift-b 26s ease-in-out infinite;
+}
+.bg-blobs .blob-3 {
+  bottom: -12%; left: 20%; width: 34vw; height: 34vw;
+  background: var(--tone-blue);
+  animation: drift-c 30s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .bg-blobs span { animation: none !important; }
+}
+
+/* Per-tone hover glow — pair with data-tone attribute or explicit class */
+.glow-hover { transition: box-shadow 0.25s ease, transform 0.25s cubic-bezier(0.16,1,0.3,1), border-color 0.25s ease; }
+.glow-hover:hover { transform: translateY(-3px); }
+.glow-hover[data-tone="blue"]:hover   { box-shadow: 0 14px 28px -14px var(--tone-blue-soft), 0 0 0 1px var(--tone-blue-soft); border-color: color-mix(in srgb, var(--tone-blue) 35%, var(--color-border)); }
+.glow-hover[data-tone="purple"]:hover { box-shadow: 0 14px 28px -14px var(--tone-purple-soft), 0 0 0 1px var(--tone-purple-soft); border-color: color-mix(in srgb, var(--tone-purple) 35%, var(--color-border)); }
+.glow-hover[data-tone="green"]:hover  { box-shadow: 0 14px 28px -14px var(--tone-green-soft), 0 0 0 1px var(--tone-green-soft); border-color: color-mix(in srgb, var(--tone-green) 35%, var(--color-border)); }
+.glow-hover[data-tone="pink"]:hover   { box-shadow: 0 14px 28px -14px var(--tone-pink-soft), 0 0 0 1px var(--tone-pink-soft); border-color: color-mix(in srgb, var(--tone-pink) 35%, var(--color-border)); }
+.glow-hover[data-tone="amber"]:hover  { box-shadow: 0 14px 28px -14px var(--tone-amber-soft), 0 0 0 1px var(--tone-amber-soft); border-color: color-mix(in srgb, var(--tone-amber) 35%, var(--color-border)); }
+.glow-hover[data-tone="orange"]:hover { box-shadow: 0 14px 28px -14px var(--tone-orange-soft), 0 0 0 1px var(--tone-orange-soft); border-color: color-mix(in srgb, var(--tone-orange) 35%, var(--color-border)); }
+.glow-hover[data-tone="teal"]:hover   { box-shadow: 0 14px 28px -14px var(--tone-teal-soft), 0 0 0 1px var(--tone-teal-soft); border-color: color-mix(in srgb, var(--tone-teal) 35%, var(--color-border)); }
+
+.content-layer { position: relative; z-index: 1; }
+
+/* Vivid gradient hero card — matches the reference "Breathe in" blob card style.
+   Use on standout / emphasis cards (streak, focus session, plan of the day, etc). */
+.gradient-hero {
+  position: relative;
+  overflow: hidden;
+  color: #fff;
+  background: radial-gradient(120% 140% at 20% 0%, #2C4374 0%, #1E3560 38%, #182B4D 70%, #14213D 100%);
+}
+.gradient-hero::before {
+  content: "";
+  position: absolute;
+  inset: -30% -20% auto auto;
+  width: 60%;
+  height: 80%;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(255,255,255,0.35) 0%, transparent 70%);
+  pointer-events: none;
+}
+.gradient-hero::after {
+  content: "";
+  position: absolute;
+  left: -20%;
+  bottom: -30%;
+  width: 55%;
+  height: 70%;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(255,255,255,0.18) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* Alternate warm-coral gradient hero (matches ref image 2 accent tone) */
+.gradient-hero-coral {
+  position: relative;
+  overflow: hidden;
+  color: #fff;
+  background: radial-gradient(120% 140% at 80% 0%, #FFC670 0%, #FCA311 38%, #E08E00 70%, #A66500 100%);
+}
+
+/* ─── Global select / dropdown styling ───────────────────────────────────
+   Applies the design-system tokens to every <select> element in the app.
+   Removes the browser default arrow and injects a custom branded chevron.
+   ─────────────────────────────────────────────────────────────────────── */
+select {
+  /* Reset browser defaults */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+
+  /* Layout & spacing */
+  display: block;
+  width: 100%;
+  padding: 0.5rem 2.25rem 0.5rem 0.75rem;
+  border-radius: 0.625rem;          /* 10px — slightly softer than card radius */
+
+  /* Design-token colours */
+  background-color: var(--color-surface-2);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+
+  /* Custom chevron using an inline SVG (respects currentColor → uses accent) */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%234B5670' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.65rem center;
+  background-size: 14px 14px;
+
+  /* Typography */
+  font-size: 0.875rem;   /* text-sm */
+  font-family: var(--font-sans);
+  line-height: 1.5;
+
+  /* Interaction */
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+
+select:hover {
+  border-color: color-mix(in srgb, var(--color-accent) 60%, var(--color-border));
+  background-color: var(--color-surface-3);
+}
+
+select:focus,
+select:focus-visible {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px var(--color-accent-soft);
+  outline: none;
+  background-color: var(--color-surface);
+}
+
+select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: var(--color-surface-3);
+}
+
+/* Style the dropdown option items (limited cross-browser support, best-effort) */
+select option {
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+}
+
+select option:checked,
+select option:hover {
+  background-color: var(--color-accent-soft);
+  color: var(--color-accent-text);
+}
+
+/* TopBar branch selector — keep it inline / compact (overrides the full-width default) */
+header select {
+  width: auto;
+  padding: 0 1rem 0 0;
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
+  font-weight: 600;
+  font-size: 0.75rem;
+  background-image: none;   /* arrow handled by the Building2 icon beside it */
+}
+header select:hover,
+header select:focus {
+  background-color: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}

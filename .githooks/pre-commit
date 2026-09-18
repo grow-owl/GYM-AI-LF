@@ -1,0 +1,34 @@
+#!/bin/sh
+# ==============================================================================
+# Git Pre-Commit Hook: Prevent Committing .env Files & Secrets
+# ==============================================================================
+
+# 1. Check for any .env files staged for commit (excluding .env.example)
+STAGED_ENV_FILES=$(git diff --cached --name-only | grep -iE '(\.env$|\.env\.)' | grep -v '\.env\.example$')
+
+if [ -n "$STAGED_ENV_FILES" ]; then
+    echo ""
+    echo "🛑 ==================================================================="
+    echo "❌ COMMIT BLOCKED: .env file detect hui hai!"
+    echo "Blocked files:"
+    echo "$STAGED_ENV_FILES"
+    echo "-------------------------------------------------------------------"
+    echo "💡 Solution: File ko unstage karne ke liye yeh command chalayein:"
+    echo "   git restore --staged <filename>"
+    echo "==================================================================="
+    echo ""
+    exit 1
+fi
+
+# 2. Check staged content for private keys or DB credentials
+if git diff --cached | grep -E -q -e 'BEGIN (RSA|EC|OPENSSH|PGP|PRIVATE) KEY' -e 'mongodb(\+srv)?://[a-zA-Z0-9._-]+:[^@]+@'; then
+    echo ""
+    echo "🛑 ==================================================================="
+    echo "❌ COMMIT BLOCKED: Staged files mein Private Key ya DB Password mila!"
+    echo "Sensitive secrets ko code mein daalna mana hai."
+    echo "==================================================================="
+    echo ""
+    exit 1
+fi
+
+exit 0
