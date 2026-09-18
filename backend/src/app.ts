@@ -53,7 +53,7 @@ app.use(helmet());
 // deployment. CLIENT_URL supports a comma-separated list for multiple environments.
 const allowedOrigins = (env.CLIENT_URL || 'http://localhost:5173')
   .split(',')
-  .map((o) => o.trim())
+  .map((o) => o.trim().replace(/\/+$/, ''))
   .filter(Boolean);
 
 app.use(
@@ -61,7 +61,8 @@ app.use(
     origin(origin, callback) {
       // No Origin header (server-to-server, curl, mobile apps) — allow.
       if (!origin) return callback(null, true);
-      if (allowedOrigins.includes(origin)) return callback(null, true);
+      const normalizedOrigin = origin.trim().replace(/\/+$/, '');
+      if (allowedOrigins.includes(normalizedOrigin)) return callback(null, true);
       logger.warn(`🚫 CORS blocked request from origin: ${origin}`);
       return callback(null, false);
     },
